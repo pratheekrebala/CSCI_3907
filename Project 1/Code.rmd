@@ -1,0 +1,34 @@
+---
+title: "Big Data Proj 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(igraph)
+```
+
+```{r cars}
+setwd("~/Documents/development/CSCI_3907/Project 1/")
+
+read_project_files <- function(data_path){
+  ego_networks <- lapply(list.files(path=data_path, pattern = '*.edges'), function(edgelist){
+    read.table(paste(data_path, edgelist, sep=''))
+  })
+  return(ego_networks)
+}
+
+graphs <- read_project_files('~/Documents/development/CSCI_3907/Project 1/data/facebook/')
+
+combined_graph <- data.frame()
+for (el in graphs){
+  combined_graph <- rbind(combined_graph, el)
+}
+
+cg <- graph_from_data_frame(combined_graph, directed = FALSE)
+
+```
+
+
+```{r}
+```
