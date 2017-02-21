@@ -27,8 +27,24 @@ for (el in graphs){
 
 cg <- graph_from_data_frame(combined_graph, directed = FALSE)
 
+simplified_graph <- simplify(cg)
+
+betweenness(simplified_graph)
+
+eigen_centrality(simplified_graph)
+
+diameter(simplified_graph)
+
+largest_cliques(simplified_graph)
+
+plot(simplified_graph)
+
+ego(simplified_graph)
+
+power_centrality(simplified_graph)
 ```
 
 
 ```{r}
+plot(cg)
 ```
