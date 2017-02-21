@@ -29,6 +29,11 @@ cg <- graph_from_data_frame(combined_graph, directed = FALSE)
 
 simplified_graph <- simplify(cg)
 
+hist(degree(simplified_graph))
+
+E(simplified_graph)[degree(simplified_graph) < 200]
+
+
 betweenness(simplified_graph)
 
 eigen_centrality(simplified_graph)
@@ -42,6 +47,8 @@ plot(simplified_graph)
 ego(simplified_graph)
 
 power_centrality(simplified_graph)
+
+plot(simplified_graph, layout.reingold.tilford(simplified_graph, circular=T))
 ```
 
 
