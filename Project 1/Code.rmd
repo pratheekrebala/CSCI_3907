@@ -39,6 +39,9 @@ parseMainGraph <- function(graphs){
   #Simplify the input graph removing the loops and multiple edges.
   simplified_graph <- simplify(cg)
   
+  #Is Simple?
+  is.simple(simplified_graph)
+  
   #Plot the degree distribution of the vertices.
   hist(degree(simplified_graph))
   
