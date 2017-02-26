@@ -24,31 +24,43 @@ graphs <- read_project_files('~/Documents/development/CSCI_3907/Project 1/data/f
 
 ```{r}
 parseMainGraph <- function(graphs){
+  
+  #Placeholder graph
   combined_graph <- data.frame()
   
+  #Merge each of the egonetworks into a single dataframe
   for (el in graphs){
     combined_graph <- rbind(combined_graph, el)
   }
   
+  #Make graph from the combined dataframe of all ego networks.
   cg <- graph_from_data_frame(combined_graph, directed = FALSE)
   
+  #Simplify the input graph removing the loops and multiple edges.
   simplified_graph <- simplify(cg)
   
+  #Plot the degree distribution of the vertices.
   hist(degree(simplified_graph))
   
+  #Only filter to edges belonging to nodes with degree less than 200
   E(simplified_graph)[degree(simplified_graph) < 200]
   
+  #Estimate the betweenness score for nodes in the graph, the betweenness is the measure of how many shortests paths that a given node belongs to.
   betweenness(simplified_graph)
   
   eigen_centrality(simplified_graph)
   
+  #The Diameter represents the longest path in the graph.
   diameter(simplified_graph)
   
+  #This function outputs the path of the diameter of the graph.
   get_diameter(simplified_graph)
   
+  #Just plot the graph
   plot(simplified_graph)
   
-  plot(simplified_graph, layout.reingold.tilford(simplified_graph, circular=T)) 
+  #Plot the graph using fruchterman reingold layout.
+  plot(simplified_graph, layout.fruchterman.reingold.grid(simplified_graph, circular=T)) 
 }
 
 parseMainGraph(graphs)
@@ -57,6 +69,8 @@ parseMainGraph(graphs)
 ### Process individual sub graph:
 ```{r}
 processGraph <- function(gr){
+  
+  #Check if given graph is an igraph object, if not then create one.
   if(class(gr) != 'igraph') {
     gr = graph_from_data_frame(gr, directed=FALSE)
   }
