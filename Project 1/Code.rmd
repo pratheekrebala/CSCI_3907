@@ -46,12 +46,12 @@ parseMainGraph <- function(graphs){
   hist(degree(simplified_graph))
   
   #Only filter to edges belonging to nodes with degree less than 200
-  E(simplified_graph)[degree(simplified_graph) < 200]
+  plot(cg[E(simplified_graph)[degree(simplified_graph) > 200]])
   
   #Estimate the betweenness score for nodes in the graph, the betweenness is the measure of how many shortests paths that a given node belongs to.
   betweenness(simplified_graph)
   
-  eigen_centrality(simplified_graph)
+  #eigen_centrality(simplified_graph)
   
   #The Diameter represents the longest path in the graph.
   diameter(simplified_graph)
@@ -78,17 +78,36 @@ processGraph <- function(gr){
     gr = graph_from_data_frame(gr, directed=FALSE)
   }
   #Plot the graph:
-  plot(gr, layout=layout_with_fr(gr, niter=1000))
+  #plot(gr, layout=layout_with_fr(gr, niter=1000))
   #Largest Clique
   largest_cliques(gr)
   #Find Ego
-  ego(gr, 2)
+  #ego(gr, 2)
   #Power Centrality
-  alpha_centrality(gr)
+  #alpha_centrality(gr)
 }
 
 
 for (graph in graphs){
   processGraph(graph)
 }
+```
+Visualize Largest Clique
+```{r}
+graph_1 <- graph_from_data_frame(graphs[[1]])
+
+clique1 <- largest_cliques(graph_1)[[1]]
+
+plot(graph_1)
+
+# subset the original graph by passing the clique vertices
+g2 <- induced.subgraph(graph=graph_1,vids=clique1)
+
+# plot the clique
+plot(g2)
+```
+
+```{r}
+clsnss = closeness(simplified_graph)
+which.max(clsnss)
 ```
