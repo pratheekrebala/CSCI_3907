@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(GGally)
 ```
 
 ## R Markdown
@@ -20,15 +21,26 @@ wine.cols <- c('fixed_acidity', 'volatile_acidity', 'citric_acid', 'residual_sug
 
 wine.white <- read.csv('./data/winequality-white.csv',  sep=";", skip = 1, header=F)
 wine.red <- read.csv('./data/winequality-red.csv',  sep=";", skip =1, header=F)
-
 names(wine.white) <- wine.cols
 names(wine.red) <- wine.cols
+
+wine.white['type'] <- 1
+wine.red['type'] <- 2
+
+wines <- rbind(wine.white, wine.red)
+wines$type <- factor(wines$type, labels=c('white', 'red'))
+
+View(wines)
 ```
 
 ```{r}
-wine.white
-```
+summary(wine.white)
 
+kmeans(wine.white, 3)
+```
+```{r}
+summary(wine.red)
+```
 ## Including Plots
 
 You can also embed plots, for example:
