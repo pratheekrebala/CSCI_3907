@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(GGally)
+library(ggplot2)
+library(psych)
 ```
 
 ## R Markdown
@@ -35,18 +37,7 @@ as.integer(wines$type)
 
 View(wines)
 ```
-
-```{r}
-summary(wine.white)
-
-kmeans(wine.white, 3)
-```
-```{r}
-summary(wine.red)
-```
-## Including Plots
-
-You can also embed plots, for example:
+#Split Training/Testing
 
 ```{r pressure, echo=FALSE}
 train_test_split <- function(dataset, ratio) {
@@ -63,4 +54,42 @@ train_test_split <- function(dataset, ratio) {
 train_test_split(wines, 0.6)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Summary Stats
+
+```{r}
+summary(wine.white)
+
+kmeans(wine.white, 3)
+```
+
+# Correlation Matrix
+
+```{r}
+library(corrplot)
+install.packages("corrplot")
+corrplot(cor(wines), order = "hclust", tl.col='black', tl.cex=.75)
+```
+
+
+```{r}
+qplot(fixed_acidity, facets = as.factor(data$type), geom = "histogram", data = wines)
+```
+
+## Princomp
+
+```{r}
+wines$type <- as.integer(wines$type)
+plot(princomp(wines, cor=T))
+plot(princomp(wines, cor=T), type='lines')
+```
+
+## Fact anal - look for > 1 SS loading value. And  > 1 eigenv_fac1 ("Kaiser Rule"), this is best achieved with 4 factors.
+```{r}
+res1b <- factanal(x=wines, factors=3, rotation = "none", na.action = na.omit)
+
+print(res1b)
+
+plot(res1b)
+loadings_fac1 = res1b$loadings[,3]
+eigenv_fac1 = sum(loadings_fac1^2); eigenv_fac1
+```
