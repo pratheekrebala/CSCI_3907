@@ -29,8 +29,6 @@ wine.red['type'] <- 2
 
 wines <- rbind(wine.white, wine.red)
 wines$type <- factor(wines$type, labels=c('white', 'red'))
-
-View(wines)
 ```
 
 ```{r}
@@ -41,12 +39,12 @@ kmeans(wine.white, 3)
 ```{r}
 summary(wine.red)
 ```
-## Including Plots
+## Plots
 
-You can also embed plots, for example:
+```{r}
+# ggpairs(wines)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+wines.train.indexes <- sample(nrow(wines), 0.6 * nrow(wines))
+wines.train <- wines[wines.train.indexes,]
+wines.test <- wines[-wines.train.indexes,]
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
