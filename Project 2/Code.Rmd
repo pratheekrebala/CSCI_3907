@@ -21,6 +21,7 @@ wine.cols <- c('fixed_acidity', 'volatile_acidity', 'citric_acid', 'residual_sug
 
 wine.white <- read.csv('./data/winequality-white.csv',  sep=";", skip = 1, header=F)
 wine.red <- read.csv('./data/winequality-red.csv',  sep=";", skip =1, header=F)
+
 names(wine.white) <- wine.cols
 names(wine.red) <- wine.cols
 
@@ -29,6 +30,8 @@ wine.red['type'] <- 2
 
 wines <- rbind(wine.white, wine.red)
 wines$type <- factor(wines$type, labels=c('white', 'red'))
+
+as.integer(wines$type)
 
 View(wines)
 ```
@@ -46,7 +49,18 @@ summary(wine.red)
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+train_test_split <- function(dataset, ratio) {
+  set.seed(101) 
+  no_of_samples <- floor(ratio*nrow(dataset))
+  sample <- sample.int(nrow(dataset), no_of_samples, replace = FALSE)
+  data <- list()
+  data$full <- dataset
+  data$train <- dataset[sample, ]
+  data$test <- dataset[-sample, ]
+  return(data)
+}
+
+train_test_split(wines, 0.6)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
