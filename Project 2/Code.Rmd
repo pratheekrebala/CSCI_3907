@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(GGally)
 library(ggplot2)
 library(psych)
+library(caret)
 ```
 
 ## R Markdown
@@ -27,15 +28,13 @@ wine.red <- read.csv('./data/winequality-red.csv',  sep=";", skip =1, header=F)
 names(wine.white) <- wine.cols
 names(wine.red) <- wine.cols
 
-wine.white['type'] <- 1
-wine.red['type'] <- 2
+wine.white['type'] <- 0
+wine.red['type'] <- 1
 
 wines <- rbind(wine.white, wine.red)
-wines$type <- factor(wines$type, labels=c('white', 'red'))
+#wines$type <- factor(wines$type, labels=c('white', 'red'))
 
-as.integer(wines$type)
-
-View(wines)
+#wines$type <- as.integer(wines$type)
 ```
 #Split Training/Testing
 
@@ -44,6 +43,7 @@ train_test_split <- function(dataset, ratio) {
   set.seed(101) 
   no_of_samples <- floor(ratio*nrow(dataset))
   sample <- sample.int(nrow(dataset), no_of_samples, replace = FALSE)
+  print(sample)
   data <- list()
   data$full <- dataset
   data$train <- dataset[sample, ]
@@ -52,6 +52,9 @@ train_test_split <- function(dataset, ratio) {
 }
 
 train_test_split(wines, 0.6)
+train_test_split(wines, 0.5)
+train_test_split(wines, 0.7)
+
 ```
 
 # Summary Stats
@@ -66,10 +69,30 @@ kmeans(wine.white, 3)
 
 ```{r}
 library(corrplot)
-install.packages("corrplot")
 corrplot(cor(wines), order = "hclust", tl.col='black', tl.cex=.75)
 ```
 
+```{r}
+mylogit <- glm(type~., wines,family="binomial")
+
+BIC(mylogit)
+
+View(wines)
+
+step(mylogit)
+```
+
+```{r}
+glm(formula = type ~ volatile_acidity + citric_acid + residual_sugar + 
+    chlorids + free_sulfur_dioxide + total_sulfur_dioxide + density + 
+    sulphates + alcohol + quality, family = "binomial", data = wines)
+```
+
+```{r}
+lm.fit <- lm(type ~ ., data=wines)
+summary(lm.fit)
+step(lm.fit)
+```
 
 ```{r}
 qplot(fixed_acidity, facets = as.factor(data$type), geom = "histogram", data = wines)
@@ -90,6 +113,6 @@ res1b <- factanal(x=wines, factors=3, rotation = "none", na.action = na.omit)
 print(res1b)
 
 plot(res1b)
-loadings_fac1 = res1b$loadings[,3]
+loadings_fac1 = res1b$loadings[,4]
 eigenv_fac1 = sum(loadings_fac1^2); eigenv_fac1
 ```
