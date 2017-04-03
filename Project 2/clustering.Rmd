@@ -1,0 +1,69 @@
+---
+title: "Wine Quality Clustering"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(psych)
+
+wine.cols <- c('fixed_acidity', 'volatile_acidity', 'citric_acid', 'residual_sugar', 'chlorids', 'free_sulfur_dioxide', 'total_sulfur_dioxide', 'density', 'pH', 'sulphates', 'alcohol', 'quality')
+
+wine.white <- read.csv('./data/winequality-white.csv',  sep=";", skip=1, header=F)
+wine.red <- read.csv('./data/winequality-red.csv',  sep=";", skip=1, header=F)
+
+names(wine.white) <- wine.cols
+names(wine.red) <- wine.cols
+
+wine.white['type'] <- 1
+wine.red['type'] <- 2
+
+wines <- rbind(wine.white, wine.red)
+wines$type <- factor(wines$type, labels=c('white', 'red'))
+wines$type <- as.integer(wines$type)
+
+train_test_split <- function(dataset, ratio) {
+  no_of_samples <- floor(ratio*nrow(dataset))
+  sample <- sample.int(nrow(dataset), no_of_samples, replace = FALSE)
+  data <- list()
+  data$full <- dataset
+  data$train <- dataset[sample, ]
+  data$test <- dataset[-sample, ]
+  return(data)
+}
+
+data5050 <- train_test_split(wines, 0.5)
+data6040 <- train_test_split(wines, 0.6)
+data7030 <- train_test_split(wines, 0.7)
+
+data5050.df <- as.data.frame(data5050$train)
+data5050.km.3 <- kmeans(data5050.df, 3)
+data5050.km.5 <- kmeans(data5050.df, 5)
+data5050.km.7 <- kmeans(data5050.df, 7)
+
+data6040.df <- as.data.frame(data6040$train)
+data6040.km.3 <- kmeans(data6040.df, 3)
+data6040.km.5 <- kmeans(data6040.df, 5)
+data6040.km.7 <- kmeans(data6040.df, 7)
+
+data7030.df <- as.data.frame(data7030$train)
+data7030.km.3 <- kmeans(data7030.df, 3)
+data7030.km.5 <- kmeans(data7030.df, 5)
+data7030.km.7 <- kmeans(data7030.df, 7)
+
+data5050.ps.3 <- iclust(data5050.df, nclusters = 3)
+data5050.ps.5 <- iclust(data5050.df, nclusters = 5)
+data5050.ps.7 <- iclust(data5050.df, nclusters = 7)
+
+data6040.ps.3 <- iclust(data6040.df, nclusters = 3)
+data6040.ps.5 <- iclust(data6040.df, nclusters = 5)
+data6040.ps.7 <- iclust(data6040.df, nclusters = 7)
+
+data7030.ps.3 <- iclust(data7030.df, nclusters = 3)
+data7030.ps.5 <- iclust(data7030.df, nclusters = 5)
+data7030.ps.7 <- iclust(data7030.df, nclusters = 7)
+```
+
