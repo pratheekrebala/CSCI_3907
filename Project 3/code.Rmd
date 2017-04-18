@@ -1,0 +1,15 @@
+---
+title: "Project 3"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+library(tm)
+```
+
+Load dataset
+
+```{r}
+data("acq")
+```
+

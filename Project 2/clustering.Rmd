@@ -8,6 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+library(flexclust)
+library(kknn)
 library(psych)
 
 wine.cols <- c('fixed_acidity', 'volatile_acidity', 'citric_acid', 'residual_sugar', 'chlorids', 'free_sulfur_dioxide', 'total_sulfur_dioxide', 'density', 'pH', 'sulphates', 'alcohol', 'quality')
@@ -26,6 +28,7 @@ wines$type <- factor(wines$type, labels=c('white', 'red'))
 wines$type <- as.integer(wines$type)
 
 train_test_split <- function(dataset, ratio) {
+  set.seed(42)
   no_of_samples <- floor(ratio*nrow(dataset))
   sample <- sample.int(nrow(dataset), no_of_samples, replace = FALSE)
   data <- list()
@@ -39,6 +42,7 @@ data5050 <- train_test_split(wines, 0.5)
 data6040 <- train_test_split(wines, 0.6)
 data7030 <- train_test_split(wines, 0.7)
 
+# kmeans
 data5050.df <- as.data.frame(data5050$train)
 data5050.km.3 <- kmeans(data5050.df, 3)
 data5050.km.5 <- kmeans(data5050.df, 5)
@@ -54,6 +58,38 @@ data7030.km.3 <- kmeans(data7030.df, 3)
 data7030.km.5 <- kmeans(data7030.df, 5)
 data7030.km.7 <- kmeans(data7030.df, 7)
 
+# hclust
+dist50 <- dist(data5050.df, method = "euclidean")
+data5050.hc.3 <- cutree(hclust(dist50), k=3)
+data5050.hc.5 <- cutree(hclust(dist50), k=5)
+data5050.hc.7 <- cutree(hclust(dist50), k=7)
+
+dist60 <- dist(data6040.df, method = "euclidean")
+data6040.hc.3 <- cutree(hclust(dist60), k=3)
+data6040.hc.5 <- cutree(hclust(dist60), k=5)
+data6040.hc.7 <- cutree(hclust(dist60), k=7)
+
+dist70 <- dist(data7030.df, method = "euclidean")
+data7030.hc.3 <- cutree(hclust(dist70), k=3)
+data7030.hc.5 <- cutree(hclust(dist70), k=5)
+data7030.hc.7 <- cutree(hclust(dist70), k=7)
+
+# spectral clustering on knn
+data5050.sc.3 <- specClust(data5050.df, centers=3)
+data5050.sc.5 <- specClust(data5050.df, centers=5)
+data5050.sc.7 <- specClust(data5050.df, centers=7)
+
+data6040.sc.3 <- specClust(data6040.df, centers=3)
+data6040.sc.5 <- specClust(data6040.df, centers=5)
+data6040.sc.7 <- specClust(data6040.df, centers=7)
+
+data7030.sc.3 <- specClust(data7030.df, centers=3)
+data7030.sc.5 <- specClust(data7030.df, centers=5)
+data7030.sc.7 <- specClust(data7030.df, centers=7)
+```
+
+```{r}
+# iclust
 data5050.ps.3 <- iclust(data5050.df, nclusters = 3)
 data5050.ps.5 <- iclust(data5050.df, nclusters = 5)
 data5050.ps.7 <- iclust(data5050.df, nclusters = 7)
@@ -67,3 +103,37 @@ data7030.ps.5 <- iclust(data7030.df, nclusters = 5)
 data7030.ps.7 <- iclust(data7030.df, nclusters = 7)
 ```
 
+# 50/50 Split Kmeans
+```{r}
+ct.km.3 <- table(data5050$train$type, data5050.km.3$cluster)
+ct.km.3
+randIndex(ct.km.3)
+
+ct.km.5 <- table(data5050$train$type, data5050.km.5$cluster)
+ct.km.5
+randIndex(ct.km.5)
+
+ct.km.7 <- table(data5050$train$type, data5050.km.7$cluster)
+ct.km.7
+randIndex(ct.km.7)
+```
+
+```{r}
+ct.hc.3 <- table(data5050$train$type, data5050.hc.3)
+ct.hc.3
+randIndex(ct.hc.3)
+```
+
+```{r}
+ct.sc.3 <- table(data7030$train$type, data7030.sc.3$cluster)
+ct.sc.3
+randIndex(ct.sc.3)
+
+ct.sc.5 <- table(data7030$train$type, data7030.sc.5$cluster)
+ct.sc.5
+randIndex(ct.sc.5)
+
+ct.sc.7 <- table(data7030$train$type, data7030.sc.7$cluster)
+ct.sc.7
+randIndex(ct.sc.7)
+```
