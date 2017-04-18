@@ -1,0 +1,25 @@
+---
+title: "Code"
+author: "Pratheek Rebala"
+date: "4/18/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+library('tm')
+data('acq')
+```
+
+```{r pressure, echo=FALSE}
+t = data.frame()
+for (doc in seq(1,length(acq))){
+  currDoc = acq[doc]
+  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
+  t <- rbind(t, rowSums(docTermMatrix)[[1]])
+}
+top_15_documents <- acq[order(t)[1:15]]
+```
