@@ -1,0 +1,47 @@
+---
+title: "Code"
+author: "Pratheek Rebala"
+date: "4/18/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library('tm')
+library('stringr')
+data('acq')
+```
+
+```{r, echo=FALSE}
+t = data.frame()
+for (doc in seq(1,length(acq))){
+  currDoc = acq[doc]
+  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
+  t <- rbind(t, rowSums(docTermMatrix)[[1]])
+}
+top_15_documents <- acq[order(t)[1:15]]
+
+top_15_documents[[5]]$content
+```
+
+```{r}
+find.text <- function(corpus, text) {
+  for(i in seq(1, length(corpus))) {
+    doc <- acq[i]
+    matches <- str_locate_all(doc[[1]]$content, text)
+    if(nrow(matches[[1]]) > 0) {
+      for(j in seq(1, nrow(matches[[1]]))) {
+        index <- matches[[1]][j, 1]
+        line_num = str_count(substr(doc[[1]]$content, 1, index), "\n") + 1
+        
+        print(paste("Document:", i, " Line:", line_num, " Index:", index))
+      }
+    }
+  }
+}
+
+find.text(acq, "reporting")
+```
