@@ -10,7 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r cars}
+require(NLP)
+library(stringr)
 library('tm')
+library(wordcloud)
 data('acq')
 ```
 
@@ -22,4 +25,43 @@ for (doc in seq(1,length(acq))){
   t <- rbind(t, rowSums(docTermMatrix)[[1]])
 }
 top_15_documents <- acq[order(t)[1:15]]
+
+acq[[1]]$content
+```
+
+```{r}
+term_doc_matrix <- TermDocumentMatrix(acq, control = list(wordLengths = c(1, Inf)))
+term_doc_matrix
+
+tdm2 <- removeSparseTerms(term_doc_matrix, sparse=0.70)
+
+distMatrix <- dist(scale(tdm2))
+distMatrix
+
+plot(hclust(distMatrix, method = "ward.D2"))
+```
+
+## 
+```{r}
+m1 <- as.matrix(tdm2)
+word.freq <- sort(rowSums(m1), decreasing = T)
+
+pal <- brewer.pal(9, 'BuGn')
+pal <- pal[-(1:4)]
+wordcloud(words = names(word.freq), freq = word.freq, min.freq = 3, random.order = F, colors = pal)
+```
+
+# Sentence Tokenizer
+```{r}
+## A simple text.
+sentenceTokenizer <- function(s){
+  sentences <- unlist(strsplit(s, '\\.(\\n|\\s)+', perl=TRUE))
+  return(sentences)
+}
+
+longestSentences <- function(doc){
+  sentences <- sentenceTokenizer(doc$content)
+  sents <- longestSentences(acq[[1]])
+  sents[order(nchar(sents), decreasing=TRUE)]
+}
 ```
