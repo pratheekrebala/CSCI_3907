@@ -24,7 +24,7 @@ for (doc in seq(1,length(acq))){
   docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
   t <- rbind(t, rowSums(docTermMatrix)[[1]])
 }
-top_15_documents <- acq[order(t)[1:15]]
+top_15_documents <- acq[order(t)[length(acq)-15:length(acq)]]
 
 acq[[1]]$content
 ```
