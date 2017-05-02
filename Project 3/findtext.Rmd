@@ -15,18 +15,6 @@ library('stringr')
 data('acq')
 ```
 
-```{r, echo=FALSE}
-t = data.frame()
-for (doc in seq(1,length(acq))){
-  currDoc = acq[doc]
-  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
-  t <- rbind(t, rowSums(docTermMatrix)[[1]])
-}
-top_15_documents <- acq[order(t)[1:15]]
-
-top_15_documents[[5]]$content
-```
-
 ```{r}
 find.text <- function(corpus, text) {
   for(i in seq(1, length(corpus))) {
