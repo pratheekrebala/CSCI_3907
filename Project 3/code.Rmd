@@ -17,6 +17,7 @@ library(wordcloud)
 data('acq')
 ```
 
+Print word count of longest (by number of words) 15 documents.
 ```{r pressure, echo=FALSE}
 t = data.frame()
 for (doc in seq(1,length(acq))){
@@ -24,9 +25,15 @@ for (doc in seq(1,length(acq))){
   docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
   t <- rbind(t, rowSums(docTermMatrix)[[1]])
 }
-top_15_documents <- acq[order(t)[length(acq)-15:length(acq)]]
+top_15_documents <- tail(acq[order(t)], 15)
 
-acq[[1]]$content
+print('Word counts of the 15 longest documents')
+
+for (doc in seq(1,15)){
+  currDoc = top_15_documents[doc]
+  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
+  print(rowSums(docTermMatrix)[[1]])
+}
 ```
 
 ```{r}
