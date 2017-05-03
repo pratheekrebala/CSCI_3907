@@ -68,7 +68,6 @@ sentenceTokenizer <- function(s){
 
 longestSentences <- function(doc){
   sentences <- sentenceTokenizer(doc$content)
-  sents <- longestSentences(acq[[1]])
-  sents[order(nchar(sents), decreasing=TRUE)]
+  sentences[order(nchar(sentences), decreasing=TRUE)]
 }
 ```
