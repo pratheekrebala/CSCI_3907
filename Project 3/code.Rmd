@@ -58,7 +58,7 @@ pal <- pal[-(1:4)]
 wordcloud(words = names(word.freq), freq = word.freq, min.freq = 3, random.order = F, colors = pal)
 ```
 
-# Sentence Tokenizer
+# Sentence Tokenizer & Print Longest 15 sentences
 ```{r}
 ## A simple text.
 sentenceTokenizer <- function(s){
@@ -75,8 +75,29 @@ all_sentences = list()
 
 for (doc in seq(1,length(acq))){
   document = acq[[doc]]
-  all_sentences <- rbind(all_sentences, longestSentences(document))
+  all_sentences <- rbind(all_sentences, longestSentences(document)[1])
 }
 
 all_sentences[order(nchar(all_sentences), decreasing=TRUE)][1:15]
+```
+
+# Print Data Frame of Sentences, Length and Document
+```{r}
+all_sentences = data.frame()
+
+for (doc in seq(1,length(acq))){
+  document = acq[[doc]]
+  longest_sentences = longestSentences(document)
+  sentence_lengths = data.frame(nchar(longest_sentences), longest_sentences)
+  sentence_lengths$doc = doc
+  all_sentences <- rbind(all_sentences, sentence_lengths)
+}
+names(all_sentences) <- c('length', 'sentence', 'document')
+
+all_sentences
+```
+
+# No Punctuation
+```{r}
+print(removePunctuation(as.character(all_sentences$sentence)))
 ```
