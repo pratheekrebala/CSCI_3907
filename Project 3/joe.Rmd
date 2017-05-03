@@ -1,0 +1,123 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+require(NLP)
+library(stringr)
+library('tm')
+library(wordcloud)
+library('wordnet')
+data('acq')
+```
+Print word count of longest (by number of words) 15 documents.
+```{r pressure, echo=FALSE}
+t = data.frame()
+for (doc in seq(1,length(acq))){
+  currDoc = acq[doc]
+  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
+  t <- rbind(t, rowSums(docTermMatrix)[[1]])
+}
+top_15_documents <- tail(acq[order(t)], 15)
+
+print('Word counts of the 15 longest documents')
+
+for (doc in seq(1,15)){
+  currDoc = top_15_documents[doc]
+  docTermMatrix <- as.matrix(DocumentTermMatrix(currDoc))
+  print(rowSums(docTermMatrix)[[1]])
+}
+```
+
+```{r}
+term_doc_matrix <- TermDocumentMatrix(acq, control = list(wordLengths = c(1, Inf)))
+term_doc_matrix
+
+tdm2 <- removeSparseTerms(term_doc_matrix, sparse=0.70)
+
+distMatrix <- dist(scale(tdm2))
+distMatrix
+
+plot(hclust(distMatrix, method = "ward.D2"))
+```
+
+## 
+```{r}
+m1 <- as.matrix(tdm2)
+word.freq <- sort(rowSums(m1), decreasing = T)
+
+pal <- brewer.pal(9, 'BuGn')
+pal <- pal[-(1:4)]
+wordcloud(words = names(word.freq), freq = word.freq, min.freq = 3, random.order = F, colors = pal)
+```
+
+# Sentence Tokenizer
+```{r}
+## A simple text.
+sentenceTokenizer <- function(s){
+  sentences <- unlist(strsplit(s, '\\.(\\n|\\s)+', perl=TRUE))
+  return(sentences)
+}
+
+longestSentences <- function(doc){
+  sentences <- sentenceTokenizer(doc$content)
+  sents <- longestSentences(acq[[1]])
+  sents[order(nchar(sents), decreasing=TRUE)]
+}
+```
+
+# Word Tokenizer
+```{r}
+wordTokenizer <- function(s){
+  words <- unlist(strsplit(s, ' ', fixed=TRUE))
+  return(words)
+}
+wordTokenizer("This is a test.")
+```
+
+Remove all punctuation, find part of speech.
+```{r}
+setDict('/home/joe/Files/Academics/BigData/Projects/Project3/dict')
+
+get.pos <- function(w) {
+  filter <- getTermFilter('ExactMatchFilter', w, TRUE)
+
+  if(length(getIndexTerms('ADJECTIVE', 1, filter)) > 0) {
+    return('Adjective')
+  }
+  
+  if(length(getIndexTerms('ADVERB', 1, filter)) > 0) {
+    return('Adverb')
+  }
+  
+  if(length(getIndexTerms('NOUN', 1, filter)) > 0) {
+    return('Noun')
+  }
+  
+  if(length(getIndexTerms('VERB', 1, filter)) > 0) {
+    return('Verb')
+  }
+  
+  return('Unknown')
+}
+
+for(i in seq(1, 15)) {
+  sents <- sentenceTokenizer(top_15_documents[[i]]$content)
+  sents <- sapply(sents, function(sent) str_replace_all(sent, "[[(\\n)]]", " "))
+  sents <- sapply(sents, function(sent) str_replace_all(sent, "[^[0-9A-Za-z\\s]]", ""))
+  
+  for(i in seq(1, length(sents))) {
+    print(sents[[i]])
+    
+    all.words <- wordTokenizer(sents[i])
+    
+    for(j in seq(1, length(all.words))) {
+      print(paste(all.words[j], ": ", get.pos(all.words[j]), sep=""))
+    }
+  }
+}
+```
