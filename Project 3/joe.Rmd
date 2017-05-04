@@ -12,6 +12,7 @@ library(stringr)
 library('tm')
 library(wordcloud)
 library('wordnet')
+library('zipfR')
 data('acq')
 ```
 Print word count of longest (by number of words) 15 documents.
@@ -120,4 +121,13 @@ for(i in seq(1, 15)) {
     }
   }
 }
+```
+
+Word Frequency with zipfR
+```{r}
+docTermMatrix <- as.matrix(DocumentTermMatrix(acq[1]))
+
+my.spc <- spc(docTermMatrix, m=1:length(docTermMatrix))
+summary(my.spc)
+plot(my.spc)
 ```
